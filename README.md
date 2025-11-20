@@ -32,6 +32,23 @@ The dashboard includes:
 - Scan DDoS
 Each section provides real-time predictions through a simple interface.
 
+🛠️ Technologies Used
+
+- Python
+
+- Streamlit
+
+- TensorFlow / Keras
+
+- Scikit-Learn
+
+- NLTK
+
+- Pandas / NumPy
+
+- Matplotlib / Seaborn
+
+  
 **Run Locally 🚀**
 
 pip install -r requirements.txt

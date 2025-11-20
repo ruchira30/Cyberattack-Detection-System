@@ -33,16 +33,6 @@ import streamlit as st
 # Download stopwords
 nltk.download('stopwords')
 
-# Download the stopwords data if not already downloaded
-nltk.download('stopwords')
-
-# Initialize stemmer and stop words
-stemmer = nltk.stem.PorterStemmer()
-stop_words = set(nltk.corpus.stopwords.words('english'))
-
-# Download stopwords
-nltk.download('stopwords')
-
 # Initialize stemmer and stop words
 stemmer = nltk.stem.PorterStemmer()
 stop_words = set(nltk.corpus.stopwords.words('english'))
@@ -355,7 +345,6 @@ def main():
                 prediction = predict_phishing_url(url_input, url_model, vectorizer)
                 st.success(f"Prediction: {prediction}")
 
-    # Placeholder for DDoS scanning (currently no functionality implemented)
 
     elif option == "Scan DDoS":
         st.subheader("DDoS Detection")
@@ -372,3 +361,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -32,7 +32,7 @@ The dashboard includes:
 - Scan DDoS
 Each section provides real-time predictions through a simple interface.
 
-🛠️ Technologies Used
+🛠️ **Technologies Used**
 
 - Python
 

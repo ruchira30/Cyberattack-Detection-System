@@ -215,11 +215,12 @@ def main():
     if "url_model" not in st.session_state:
         st.session_state.url_model = None
         st.session_state.vectorizer = None
-
+    #Homepage
     if option == "Select":
         st.image('dataset/images.jpg', use_container_width=True)
         st.write("Select an option from the sidebar to start detection.")
-
+        
+    # Email Detection
     elif option == "Scan Emails":
         st.subheader("Phishing Email Detection")
         user_input = st.text_area("Enter email subject or body text:")
@@ -236,7 +237,7 @@ def main():
                 with st.spinner("Scanning email for phishing..."):
                     result = predict_phishing(user_input, st.session_state.email_model, st.session_state.tokenizer, st.session_state.maxlen)
                     st.success(f"Prediction: {result}")
-
+    # URL Detection
     elif option == "Scan URLs":
         st.subheader("URL Phishing Detection")
         url_input = st.text_input("Enter URL:")
@@ -252,7 +253,7 @@ def main():
                 with st.spinner("Scanning URL for phishing..."):
                     result = predict_phishing_url(url_input, st.session_state.url_model, st.session_state.vectorizer)
                     st.success(f"Prediction: {result}")
-
+    # DDoS Detection
     elif option == "Scan DDoS":
         st.subheader("DDoS Detection")
         if st.button("Analyze"):
@@ -270,6 +271,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

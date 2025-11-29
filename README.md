@@ -18,12 +18,6 @@ This system provides real-time predictions for email phishing, malicious URLs, a
 - Scales features using StandardScaler
 - Trains a fully connected neural network to classify Normal vs DDoS traffic
 
-# Includes visualizations:
-- Protocol frequency
-- Packet count distribution
-- Byte count distribution
-- Class distribution
-- Confusion matrix and classification report
 
 **# Run Locally 🚀**
 streamlit run app.py

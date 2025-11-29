@@ -211,7 +211,7 @@ def main():
         st.session_state.vectorizer = None
 
     if option == "Select":
-        st.image(r'C:\Users\rutap\Downloads\images.jpg', use_container_width=True)
+        st.image('dataset/images.jpg', use_container_width=True)
         st.write("Select an option from the sidebar to start detection.")
 
     elif option == "Scan Emails":
@@ -264,4 +264,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

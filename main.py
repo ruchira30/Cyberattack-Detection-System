@@ -9,7 +9,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout, Bidirectional
 from tensorflow.keras.callbacks import EarlyStopping
 from keras.utils import to_categorical
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, confusion_matrix
 import streamlit as st
 import nltk
@@ -114,37 +114,54 @@ def predict_phishing_url(url, model, vectorizer):
     prediction_proba = model.predict_proba(url_vector)
     print(f"URL: {url}, Prediction: {prediction[0]}, Probability: {prediction_proba[0]}")
     return "Phishing" if prediction[0] == 1 else "Not Phishing"
-    
+
+@st.cache_data
 def load_ddos_data():
     try:
         data = pd.read_csv("datasets/dataset_sdn.csv")
-        features = ['pktcount', 'bytecount', 'dur', 'tot_dur', 'flows', 'pktrate', 'port_no', 'tx_bytes', 'rx_bytes']
+        features = ['pktcount', 'bytecount', 'dur', 'tot_dur','flows', 'pktrate', 'port_no', 'tx_bytes', 'rx_bytes']
         target = 'label'
+        
+        if not all(f in data.columns for f in features):
+            st.error("One or more required columns are missing from dataset.")
+            return None, None, None,None
+
         if target not in data.columns:
-            st.error(f"Target column '{target}' not found in the dataset.")
-            return None, None, data
-        encoder = OneHotEncoder(sparse_output=True, drop='first', max_categories=100) 
-        encoded_features = encoder.fit_transform(data[features])
-        X = encoded_features
+            st.error(f"Target column '{target}' not found.")
+            return None, None, None,None
+
+        X = data[features].values
         y = data[target].values
-        y = to_categorical(y)
-        return X, y, data
+ 
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        return X_scaled, y, data, scaler
+        
     except Exception as e:
         st.error(f"Error loading data: {e}")
-        return None, None, None
+        return None, None, None, None
 
 def train_ddos_model(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-    model = Sequential()
-    model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(y_train.shape[1], activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(X_train.toarray(), y_train, epochs=30, batch_size=50, verbose=1)
-    y_pred_probs = model.predict(X_test.toarray())  
-    y_pred = np.argmax(y_pred_probs, axis=1) 
-    y_test_labels = np.argmax(y_test, axis=1) 
-    return y_test_labels, y_pred
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+    model = Sequential([
+        Dense(64, activation='relu', input_dim=X_train.shape[1]),
+        Dropout(0.2),
+        Dense(32, activation='relu'),
+        Dropout(0.2),
+        Dense(1, activation='sigmoid')  # Binary classification
+    ])
+    model.compile(
+        optimizer='adam',
+        loss='binary_crossentropy',
+        metrics=['accuracy']
+    )
+    model.fit(X_train, y_train, epochs=25, batch_size=32, verbose=1)
+    y_pred_probs = model.predict(X_test)
+    y_pred = (y_pred_probs > 0.5).astype(int).flatten()
+    return y_test, y_pred, model
+
 
 def display_data_visualizations(data):
     st.subheader("Data Visualizations")
@@ -241,19 +258,23 @@ def main():
                 
     elif option == "Scan DDoS":
         st.subheader("DDoS Detection")
+    
         if st.button("Analyze"):
             with st.spinner("Loading and preprocessing DDoS data..."):
-                X, y, data = load_ddos_data()
-                if X is not None and y is not None and data is not None:
+                X, y, data, scaler = load_ddos_data()
+    
+                if X is not None:
                     display_data_visualizations(data)
-                    y_test, y_pred = train_ddos_model(X, y)
+                    y_test, y_pred, ddos_model = train_ddos_model(X, y)
                     display_classification_report(y_test, y_pred)
                 else:
                     st.error("Failed to load DDoS data.")
 
 
+
 if __name__ == "__main__":
     main()
+
 
 
 

@@ -26,6 +26,7 @@ from nltk.stem import PorterStemmer
 stemmer = PorterStemmer()
 stop_words = set(stopwords.words('english'))
 
+# Phishing Emails
 def preprocess_text(text):
     if isinstance(text, str):
         text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
@@ -54,6 +55,7 @@ def load_and_preprocess_data():
     return tokenizer, maxlen, X_train, X_test, y_train, y_test
 
 def create_model(max_words, maxlen):
+    """ Bi-LSTM Model """
     model = Sequential([
         Embedding(input_dim=max_words, output_dim=128, input_length=maxlen),
         Bidirectional(LSTM(64, return_sequences=True)),
@@ -76,6 +78,8 @@ def predict_phishing(text, model, tokenizer, maxlen):
     padded_sequence = pad_sequences(sequence, maxlen=maxlen)
     prediction = model.predict(padded_sequence)
     return "Phishing" if prediction[0][0] > 0.5 else "Not Phishing"
+
+# URL Phishing 
 
 def preprocess_url(url):
     if not isinstance(url, str):
@@ -121,7 +125,7 @@ def predict_phishing_url(url, model, vectorizer):
     print(f"URL: {url}, Prediction: {prediction[0]}, Probability: {prediction_proba[0]}")
     return "Phishing" if prediction[0] == 1 else "Not Phishing"
 
-
+# DDoS Detection
 def load_ddos_data():
     try:
         data = pd.read_csv("dataset/dataset_sdn.csv")
@@ -196,6 +200,8 @@ def display_classification_report(y_test, y_pred):
     ax.set_ylabel('Actual Labels')
     st.pyplot(fig)
 
+
+# Streamlit
 def main():
     st.set_page_config(page_title="Cyberattack Detection System", layout="wide")
     st.title("Cyberattack Detection System")
@@ -264,5 +270,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 

@@ -37,7 +37,7 @@ def preprocess_text(text):
     return ''
 
 def load_and_preprocess_data():
-    url = "C:/Users/rutap/Downloads/phishing_data_by_type.csv"
+    url = 'dataset/phishing_data_by_type.csv'
     data = pd.read_csv(url)
     data['Subject'] = data['Subject'].apply(preprocess_text)
     data['Text'] = data['Text'].apply(preprocess_text)
@@ -78,7 +78,6 @@ def predict_phishing(text, model, tokenizer, maxlen):
     return "Phishing" if prediction[0][0] > 0.5 else "Not Phishing"
 
 def preprocess_url(url):
-    """Clean URL for logistic regression vectorizer."""
     if not isinstance(url, str):
         return ''
     url = url.lower().strip()
@@ -88,22 +87,18 @@ def preprocess_url(url):
     return url
 
 def load_url_data():
-    file1 = r"C:\Users\rutap\Downloads\phishing_url_data_1.csv"
-    file2 = r"C:\Users\rutap\Downloads\phishing_urls_data.csv"
-
+    file1 = 'dataset/phishing_url_data_1.csv'
+    file2 = 'dataset/phishing_urls_data.csv'
     df1 = pd.read_csv(file1)[['URL', 'Label']]
     df2 = pd.read_csv(file2)[['URL', 'Label']]
-
     data = pd.concat([df1, df2], ignore_index=True)
     data['URL'] = data['URL'].apply(preprocess_url)
-
     data['Label'] = (
         data['Label']
         .astype(str)
         .str.lower()
         .map({'bad': 1, 'good': 0})
     )
-
     data = data.dropna(subset=['Label'])
     return data['URL'], data['Label'].astype(int)
 
@@ -129,7 +124,7 @@ def predict_phishing_url(url, model, vectorizer):
 
 def load_ddos_data():
     try:
-        data = pd.read_csv(r"C:\Users\rutap\Downloads\dataset_sdn.csv")
+        data = pd.read_csv("dataset/dataset_sdn.csv")
         features = ['pktcount', 'bytecount', 'dur', 'tot_dur','flows', 'pktrate', 'port_no', 'tx_bytes', 'rx_bytes']
         target = 'label'
         if not all(f in data.columns for f in features):
@@ -269,3 +264,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
